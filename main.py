@@ -29,8 +29,7 @@ def compare(out,ans,strict):
 
 def main():
     parser=argparse.ArgumentParser(
-        description='Auto test the OI program',
-        epilog="usage: python3 OI.py program.cpp -[cpih]"
+        description='A CLI tool to help OIer to simplify the compile&amp;test process in terminal',
     )
 
     parser.add_argument('file', help='input program name')
