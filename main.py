@@ -7,17 +7,23 @@ COMPILE_COMMAND='g++-14 -O2 -lm -DONLINE_JUDGE -std=c++14'
 
 def compare(out,ans,strict):
     # split the output
-    out_lines=out.split("\n")
+    out_lines=[]
     out_segments=[]
-    for line in out_lines:
+    for line in out.split("\n"):
+        if line=="":
+            continue
+        out_lines.append(line)
         for segment in line.split(" "):
             if segment=="":
                 continue
             out_segments.append(segment)
     # split the answer
-    ans_lines=ans.split("\n")
+    ans_lines=[]
     ans_segments=[]
-    for line in ans_lines:
+    for line in ans.split("\n"):
+        if line=="":
+            continue
+        ans_lines.append(line)
         for segment in line.split(" "):
             if segment=="":
                 continue
