@@ -1,7 +1,12 @@
 import argparse
 import os,subprocess
 
+EDITOR='nvim'
+COMPILE_COMMAND='g++-14 -O2 -lm -DONLINE_JUDGE -std=c++14' 
+
+
 def compare(out,ans,strict):
+    # split the output
     out_lines=out.split("\n")
     out_segments=[]
     for line in out_lines:
@@ -9,6 +14,7 @@ def compare(out,ans,strict):
             if segment=="":
                 continue
             out_segments.append(segment)
+    # split the answer
     ans_lines=ans.split("\n")
     ans_segments=[]
     for line in ans_lines:
@@ -16,22 +22,24 @@ def compare(out,ans,strict):
             if segment=="":
                 continue
             ans_segments.append(segment)
-    if strict:
+    # compare
+    if strict:# strict, compare each line
         if out_lines==ans_lines:
             return True
         else:
             return False
-    else:
+    else:# normal, compare each segments
         if out_segments==ans_segments:
             return True
         return False
             
 
 def main():
+    # create parser
     parser=argparse.ArgumentParser(
         description='A CLI tool to help OIer to simplify the compile&amp;test process in terminal',
     )
-
+    # args
     parser.add_argument('file', help='input program name')
     parser.add_argument('-i','--input', action='store_true', help='edit input file')
     parser.add_argument('-c','--compile', action='store_true', help='compile') 
@@ -40,19 +48,23 @@ def main():
     parser.add_argument('-j','--judge', action='store_true', help='judge(compare) the output and answer')
     parser.add_argument('-s','--strict', action='store_true', help='judge(compare) the output and answer strictly')
 
-    args = parser.parse_args()
+    args = parser.parse_args() # get args
+    # get file name
     path=os.getcwd()
     file_in=os.path.join(path,args.file+".in")
     file_ans=os.path.join(path,args.file+".ans")
     file_cpp=os.path.join(path,args.file+".cpp")
     file_exec=os.path.join(path,args.file)
+    
+    # process
     if args.input:
-        os.system(f'nvim "{file_in}"')
+        os.system(f'{EDITOR} "{file_in}"')
     if args.answer:
-        os.system(f'nvim "{file_ans}"')
+        os.system(f'{EDITOR} "{file_ans}"')
     if args.compile:
-        os.system(f'g++-14 -O2 -lm -DONLINE_JUDGE -std=c++14 "{file_cpp}" -o "{file_exec}"')
+        os.system(f'{COMPILE_COMMAND} "{file_cpp}" -o "{file_exec}"')
     if args.run:
+        # execute
         result=subprocess.run(
             f'"{file_exec}" < "{file_in}"',
             shell=True,
@@ -61,12 +73,15 @@ def main():
             encoding='utf-8'
         )
 
+        # show the output
         print("-------OUTPUT-------")
         print(result.stdout)
         if result.stderr:
             print("-------ERROR-------")
             print(result.stderr)
         print("Return code:",result.returncode)
+
+        # judge
         if args.answer or args.judge or args.strict:
             f=open(file_ans, 'r')
             ans=f.read()
@@ -75,21 +90,6 @@ def main():
             else:
                 print("Wrong Answer")
             f.close()
-        
-
-
-    
-
-        
-    """
-    TODO
-    1√. 当输入-i时, 创建样例文件并打开
-    2√. 当输入-c时, 编译
-    3√. 当输入-p时, 执行样例文件
-    4√. 按i/c/p的顺序执行
-    5√. 比对文本, 开启时nvim xxx.ans, 比对输出
-    6√. compare的严格(匹配每行内容)/宽松(匹配每段内容)模式
-    """
 
 if __name__=='__main__':
     main()
