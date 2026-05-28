@@ -71,27 +71,37 @@ def main():
         os.system(f'{COMPILE_COMMAND} "{file_cpp}" -o "{file_exec}"')
     if args.run:
         # execute
-        result=subprocess.run(
-            f'"{file_exec}" < "{file_in}"',
+        process=subprocess.Popen(
+            f'stdbuf -oL "{file_exec}" < "{file_in}"',# disable buffer
             shell=True,
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
             encoding='utf-8'
         )
 
         # show the output
         print("-------OUTPUT-------")
-        print(result.stdout)
-        if result.stderr:
+        stdout=""
+        for line in process.stdout:
+            print(line,end="")
+            stdout+=line
+
+        # wait for return
+        process.wait()
+        print()
+
+        # show err&return code
+        if process.stderr.read():
             print("-------ERROR-------")
-            print(result.stderr)
-        print("Return code:",result.returncode)
+            print(process.stderr.read())
+        print("Return code:",process.returncode)
 
         # judge
         if args.answer or args.judge or args.strict:
             f=open(file_ans, 'r')
             ans=f.read()
-            if compare(result.stdout,ans,args.strict):
+            if compare(stdout,ans,args.strict):
                 print("Correct Answer")
             else:
                 print("Wrong Answer")
