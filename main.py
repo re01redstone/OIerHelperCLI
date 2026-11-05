@@ -3,6 +3,12 @@ import os,subprocess
 
 EDITOR='nvim'
 COMPILE_COMMAND='g++-14 -O2 -lm -DONLINE_JUDGE -std=c++14' 
+INTERLEAVE=False
+
+if INTERLEAVE:# print the output simutaneously to the tty
+    STDERR_OUTPUT_MODE=subprocess.STDOUT
+else:# print the stderr first
+    STDERR_OUTPUT_MODE=subprocess.PIPE
 
 
 def compare(out,ans,strict):
@@ -75,10 +81,17 @@ def main():
             f'stdbuf -oL "{file_exec}" < "{file_in}"',# disable buffer
             shell=True,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stderr=STDERR_OUTPUT_MODE,
             text=True,
             encoding='utf-8'
         )
+
+        # show err in usual mode
+        if not INTERLEAVE:
+            print("-------ERROR-------")
+            for line in process.stderr:
+                print(line,end="")
+            process.wait()
 
         # show the output
         print("-------OUTPUT-------")
@@ -91,10 +104,6 @@ def main():
         process.wait()
         print()
 
-        # show err&return code
-        if process.stderr.read():
-            print("-------ERROR-------")
-            print(process.stderr.read())
         print("Return code:",process.returncode)
 
         # judge
