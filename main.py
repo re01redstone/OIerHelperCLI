@@ -49,7 +49,7 @@ def compare(out,ans,strict):
 def main():
     # create parser
     parser=argparse.ArgumentParser(
-        description='A CLI tool to help OIer to simplify the compile&amp;test process in terminal',
+        description='A CLI tool to help OIer to simplify the compile&test process in terminal',
     )
     # args
     parser.add_argument('file', help='input program name')
