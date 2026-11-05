@@ -3,7 +3,7 @@ import os,subprocess
 
 EDITOR='nvim'
 COMPILE_COMMAND='g++-14 -O2 -lm -DONLINE_JUDGE -std=c++14' 
-INTERLEAVE=False
+INTERLEAVE=True
 
 if INTERLEAVE:# print the output simutaneously to the tty
     STDERR_OUTPUT_MODE=subprocess.STDOUT
@@ -99,6 +99,7 @@ def main():
         for line in process.stdout:
             print(line,end="")
             stdout+=line
+            print()
 
         # wait for return
         process.wait()
